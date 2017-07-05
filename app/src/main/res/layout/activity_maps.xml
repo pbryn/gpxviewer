@@ -14,6 +14,21 @@
         tools:context="com.pawelbryniarski.gpxviewer.tracksviewer.ui.MapsActivity" />
 
     <android.support.design.widget.FloatingActionButton
+        android:id="@+id/zoom_to_track"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_marginBottom="88dp"
+        android:layout_marginRight="16dp"
+        android:clickable="true"
+        android:src="@drawable/ic_zoom_24dp"
+        app:backgroundTint="?attr/colorPrimary"
+        app:elevation="8dp"
+        app:fabSize="normal"
+        tools:ignore="RtlHardcoded" />
+
+
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/select_tracks"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -21,10 +36,10 @@
         android:layout_marginBottom="16dp"
         android:layout_marginRight="16dp"
         android:clickable="true"
-        app:fabSize="normal"
-        app:backgroundTint="#4542ff"
         android:src="@drawable/ic_list_24dp"
+        app:backgroundTint="?attr/colorPrimary"
         app:elevation="8dp"
+        app:fabSize="normal"
         tools:ignore="RtlHardcoded" />
 
 </FrameLayout>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<gpx version="1.1" creator="Navmii">
+	<name>Navmii Track 110-03-01 02-56</name>
+	<trk>
+		<name>Navmii Track 110-03-01 02-56</name>
+		<trkseg>
+			<trkpt lon="4.895370" lat="52.376970">
+				<time>2010-04-01T01:40:44Z</time>
+				<extensions>
+					<extraData azimuth="83.110001" speedInKnots="0.835853" horizontalAccuracy="0" ticks="0"/>
+				</extensions>
+			</trkpt>
+			<trkpt lon="4.895180" lat="52.377060">
+				<time>2010-04-01T01:40:45Z</time>
+				<extensions>
+					<extraData azimuth="83.110001" speedInKnots="0.835853" horizontalAccuracy="0" ticks="0"/>
+				</extensions>
+			</trkpt>
+		</trkseg>
+	</trk>
+</gpx>
