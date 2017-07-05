@@ -1,13 +1,11 @@
 package com.pawelbryniarski.gpxviewer.tracksviewer.ui;
 
 import android.content.DialogInterface;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
-import android.util.TypedValue;
 import android.view.animation.OvershootInterpolator;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -87,11 +85,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }, 500);
     }
 
-    private float dpToPx(float value) {
-        Resources r = getResources();
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value, r.getDisplayMetrics());
-    }
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -102,7 +95,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Arrays.asList(savedState.getStringArray(LOADED_TRACKS_KEY)),
                     null);
         } else {
-            initialState = new MapViewState(false,
+            initialState = new MapViewState(
+                    false,
                     false,
                     new ArrayList<String>(),
                     new HashMap<String, List<LatLng>>());

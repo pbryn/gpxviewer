@@ -25,10 +25,18 @@ public class MapsPresenter implements MapsMVP.Presenter {
     private void initialize(MapViewState initialState) {
         if (!initialState.loadedTracks.isEmpty()) {
             state = new MapViewState(state.trackPickerVisible,
-                                     state.zoomPickerVisible,
-                                     state.loadedTracks,
-                                     model.getTracksData(initialState.loadedTracks));
+                    state.zoomPickerVisible,
+                    state.loadedTracks,
+                    model.getTracksData(initialState.loadedTracks));
             activity.draw(state.tracksData);
+        }
+
+        if (initialState.zoomPickerVisible) {
+            onZoomRequest();
+        }
+
+        if (initialState.trackPickerVisible) {
+            onLoadTracksRequest();
         }
     }
 
@@ -41,11 +49,13 @@ public class MapsPresenter implements MapsMVP.Presenter {
     @Override
     public void onZoomRequest() {
         activity.showZoomPicker(state.loadedTracks.toArray(new String[state.loadedTracks.size()]));
+        state = new MapViewState(state.trackPickerVisible, true, state.loadedTracks, state.tracksData);
     }
 
     @Override
     public void onZoomPicked(String trackName) {
         activity.zoom(state.tracksData.get(trackName).get(0));
+        state = new MapViewState(state.trackPickerVisible, false, state.loadedTracks, state.tracksData);
     }
 
     @Override
@@ -58,6 +68,7 @@ public class MapsPresenter implements MapsMVP.Presenter {
                 selected[i] = true;
             }
         }
+        state = new MapViewState(true, state.zoomPickerVisible, state.loadedTracks, state.tracksData);
         activity.showTracksPicker(selected, allTracks.toArray(new String[allTracks.size()]));
     }
 
@@ -73,7 +84,8 @@ public class MapsPresenter implements MapsMVP.Presenter {
 
         Map<String, List<LatLng>> tracks = model.getTracksData(newlySelectedTracks);
 
-        state = new MapViewState(false, false, newlySelectedTracks, tracks);
         activity.draw(tracks);
+        activity.showZoomPicker(tracksNames);
+        state = new MapViewState(false, true, newlySelectedTracks, tracks);
     }
 }
