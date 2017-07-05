@@ -3,4 +3,5 @@
     <string name="title_activity_maps">Map</string>
     <string name="pick_tracks_title">Pick tracks to show</string>
     <string name="ok">OK</string>
+    <string name="pick_track_to_zoom">Pick track to zoom</string>
 </resources>

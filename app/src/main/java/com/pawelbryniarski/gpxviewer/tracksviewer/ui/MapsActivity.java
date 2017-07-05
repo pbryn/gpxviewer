@@ -1,10 +1,14 @@
 package com.pawelbryniarski.gpxviewer.tracksviewer.ui;
 
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
+import android.util.TypedValue;
+import android.view.animation.OvershootInterpolator;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -21,10 +25,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, MapsMVP.View  {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, MapsMVP.View {
 
     public static final String ZOOM_PICKER_VISIBLE_KEY = "ZOOM_PICKER_VISIBLE";
     public static final String LOADED_TRACKS_KEY = "LOADED_TRACKS";
@@ -32,7 +37,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public static final int ZOOM_RATIO = 10;
     public static final int MAP_LINES_WIDTH = 5;
     private static final int[] colors = new int[]{Color.BLUE, Color.RED, Color.BLACK, Color.YELLOW,
-                                                  Color.WHITE};
+            Color.WHITE};
     private GoogleMap mMap;
     private MapsPresenter mapsPresenter = new MapsPresenter();
     private Bundle savedState;
@@ -47,6 +52,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapsPresenter.onZoomRequest();
     }
 
+    @BindView(R.id.select_tracks)
+    FloatingActionButton selectTracksButton;
+
+    @BindView(R.id.zoom_to_track)
+    FloatingActionButton zoomButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +68,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         savedState = savedInstanceState;
+
+        zoomButton.setScaleX(0);
+        zoomButton.setScaleY(0);
+        selectTracksButton.setScaleX(0);
+        selectTracksButton.setScaleY(0);
+        selectTracksButton.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                selectTracksButton.animate().setInterpolator(new OvershootInterpolator()).scaleX(1).scaleY(1).withEndAction(new Runnable() {
+                    @Override
+                    public void run() {
+                        zoomButton.animate().setInterpolator(new OvershootInterpolator()).scaleX(1).scaleY(1).start();
+                    }
+                }).start();
+
+            }
+        }, 500);
+    }
+
+    private float dpToPx(float value) {
+        Resources r = getResources();
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value, r.getDisplayMetrics());
     }
 
     @Override
@@ -65,14 +98,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         MapViewState initialState;
         if (savedState != null) {
             initialState = new MapViewState(savedState.getBoolean(TRACKS_PICKER_VISIBLE_KEY),
-                                            savedState.getBoolean(ZOOM_PICKER_VISIBLE_KEY),
-                                            Arrays.asList(savedState.getStringArray(LOADED_TRACKS_KEY)),
-                                            null);
+                    savedState.getBoolean(ZOOM_PICKER_VISIBLE_KEY),
+                    Arrays.asList(savedState.getStringArray(LOADED_TRACKS_KEY)),
+                    null);
         } else {
             initialState = new MapViewState(false,
-                                            false,
-                                            new ArrayList<String>(),
-                                            new HashMap<String, List<LatLng>>());
+                    false,
+                    new ArrayList<String>(),
+                    new HashMap<String, List<LatLng>>());
         }
         savedState = null;
         mapsPresenter.attach(this, initialState);
@@ -84,7 +117,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         outState.putBoolean(TRACKS_PICKER_VISIBLE_KEY, stateToSave.trackPickerVisible);
         outState.putBoolean(ZOOM_PICKER_VISIBLE_KEY, stateToSave.zoomPickerVisible);
         outState.putStringArray(LOADED_TRACKS_KEY,
-                                stateToSave.loadedTracks.toArray(new String[stateToSave.loadedTracks.size()]));
+                stateToSave.loadedTracks.toArray(new String[stateToSave.loadedTracks.size()]));
         // do not save actual tracks as this may be too much data
         super.onSaveInstanceState(outState);
     }
@@ -95,12 +128,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         int colorIndex = 0;
         for (Map.Entry<String, List<LatLng>> trackData : tracks.entrySet()) {
             mMap.addPolyline(new PolylineOptions()
-                                     .addAll(trackData.getValue())
-                                     .width(MAP_LINES_WIDTH)
-                                     .color(colors[colorIndex % colors.length])
-                                     .geodesic(true));
+                    .addAll(trackData.getValue())
+                    .width(MAP_LINES_WIDTH)
+                    .color(colors[colorIndex % colors.length])
+                    .geodesic(true));
             mMap.addMarker(new MarkerOptions().title(trackData.getKey())
-                                              .position(trackData.getValue().get(0)));
+                    .position(trackData.getValue().get(0)));
             colorIndex++;
         }
     }
@@ -115,7 +148,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void showZoomPicker(final String[] trackNames) {
         new AlertDialog
                 .Builder(this)
-                .setTitle(R.string.pick_tracks_title)
+                .setTitle(R.string.pick_track_to_zoom)
                 .setSingleChoiceItems(trackNames, -1, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -132,12 +165,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         new AlertDialog.Builder(this)
                 .setTitle(R.string.pick_tracks_title)
                 .setMultiChoiceItems(tracksNames, selectedTracks,
-                                     new DialogInterface.OnMultiChoiceClickListener() {
-                                         @Override
-                                         public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                                             selectedTracks[which] = isChecked;
-                                         }
-                                     })
+                        new DialogInterface.OnMultiChoiceClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                                selectedTracks[which] = isChecked;
+                            }
+                        })
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
