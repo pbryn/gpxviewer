@@ -1,6 +1,7 @@
 package com.pawelbryniarski.gpxviewer.tracksviewer.repository;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,15 +18,16 @@ public class AssetTracksReader implements TracksReader {
 
     @Override
     public List<String> getAvailableTracks() {
-        String[] fullNamesWithExtension;
+        String[] trackFiles;
+
         try {
-            fullNamesWithExtension = context.getAssets().list("tracks");
+            trackFiles = context.getAssets().list("tracks");
         } catch (IOException e) {
             throw new RuntimeException("Unable to read tracks from assets");
         }
-        List<String> names = new ArrayList<>(fullNamesWithExtension.length);
-        for (String aFullNamesWithExtension : fullNamesWithExtension) {
-            names.add(aFullNamesWithExtension.substring(0, aFullNamesWithExtension.lastIndexOf(".gpx")));
+        List<String> names = new ArrayList<>(trackFiles.length);
+        for (String trackFileName : trackFiles) {
+            names.add(removeFileExtension(trackFileName));
         }
         return names;
     }
@@ -37,5 +39,10 @@ public class AssetTracksReader implements TracksReader {
         } catch (IOException e) {
             throw new RuntimeException("Unable to read " + path + "from assets" + ". This should not happen");
         }
+    }
+
+    @NonNull
+    private String removeFileExtension(String trackFileName) {
+        return trackFileName.substring(0, trackFileName.lastIndexOf(".gpx"));
     }
 }
