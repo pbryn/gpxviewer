@@ -25,9 +25,9 @@ public class MapsPresenter implements MapsMVP.Presenter {
     private void initialize(MapViewState initialState) {
         if (!initialState.loadedTracks.isEmpty()) {
             state = new MapViewState(state.trackPickerVisible,
-                    state.zoomPickerVisible,
-                    state.loadedTracks,
-                    model.getTracksData(initialState.loadedTracks));
+                                     state.zoomPickerVisible,
+                                     state.loadedTracks,
+                                     model.getTracksData(initialState.loadedTracks));
             activity.draw(state.tracksData);
         }
 
@@ -85,7 +85,11 @@ public class MapsPresenter implements MapsMVP.Presenter {
         Map<String, List<LatLng>> tracks = model.getTracksData(newlySelectedTracks);
 
         activity.draw(tracks);
-        activity.showZoomPicker(tracksNames);
-        state = new MapViewState(false, true, newlySelectedTracks, tracks);
+        if (!tracks.isEmpty()) {
+            activity.showZoomPicker(tracksNames);
+            state = new MapViewState(false, true, newlySelectedTracks, tracks);
+        } else {
+            state = new MapViewState(false, false, newlySelectedTracks, tracks);
+        }
     }
 }
