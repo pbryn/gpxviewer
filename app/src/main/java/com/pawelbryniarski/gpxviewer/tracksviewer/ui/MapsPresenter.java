@@ -15,7 +15,8 @@ public class MapsPresenter implements MapsMVP.Presenter {
     private MapViewState state;
     private MapsMVP.View view;
 
-    @Inject public MapsPresenter(MapsMVP.Model model) {
+    @Inject
+    public MapsPresenter(MapsMVP.Model model) {
         this.model = model;
     }
 
@@ -90,11 +91,15 @@ public class MapsPresenter implements MapsMVP.Presenter {
         Map<String, List<LatLng>> tracks = model.getTracksData(newlySelectedTracks);
 
         view.draw(tracks);
-        if (!tracks.isEmpty()) {
-            view.showZoomPicker(tracksNames);
-            state = new MapViewState(false, true, newlySelectedTracks, tracks);
-        } else {
+
+        if (tracks.isEmpty()) {
             state = new MapViewState(false, false, newlySelectedTracks, tracks);
+        } else if (tracks.size() == 1) {
+            view.zoom(tracks.get(newlySelectedTracks.get(0)).get(0));
+            state = new MapViewState(false, false, newlySelectedTracks, tracks);
+        } else {
+            view.showZoomPicker(newlySelectedTracks.toArray(new String[newlySelectedTracks.size()]));
+            state = new MapViewState(false, true, newlySelectedTracks, tracks);
         }
     }
 }
