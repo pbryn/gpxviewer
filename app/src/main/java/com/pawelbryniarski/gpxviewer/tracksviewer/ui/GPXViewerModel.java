@@ -1,8 +1,5 @@
 package com.pawelbryniarski.gpxviewer.tracksviewer.ui;
 
-import android.content.Context;
-import android.util.Log;
-
 import com.google.android.gms.maps.model.LatLng;
 import com.pawelbryniarski.gpxviewer.tracksviewer.gpx.GPXParser;
 import com.pawelbryniarski.gpxviewer.tracksviewer.repository.TracksReader;
@@ -14,7 +11,6 @@ import java.util.Map;
 
 public class GPXViewerModel implements MapsMVP.Model {
 
-    private static final String TAG = "GPXViewerModel";
     private final GPXParser parser;
     private final TracksReader tracksReader;
 
@@ -27,17 +23,14 @@ public class GPXViewerModel implements MapsMVP.Model {
     @Override
     public Map<String, List<LatLng>> getTracksData(List<String> selectedTracks) {
         Map<String, List<LatLng>> tracks = new HashMap<>();
-        for (int i = 0; i < selectedTracks.size(); i++) {
-            String newlySelectedTrack = selectedTracks.get(i);
-            String path = "tracks/" + newlySelectedTrack + ".gpx";
+
+        for (String selectedTrack : selectedTracks) {
+            String path = "tracks/" + selectedTrack + ".gpx";
 
             InputStream fis = tracksReader.getTrack(path);
-            if (fis == null) {
-                Log.e(TAG, "Unable to read " + path);
-                continue;
-            }
+
             List<LatLng> points = parser.parse(fis);
-            tracks.put(newlySelectedTrack, points);
+            tracks.put(selectedTrack, points);
         }
         return tracks;
     }

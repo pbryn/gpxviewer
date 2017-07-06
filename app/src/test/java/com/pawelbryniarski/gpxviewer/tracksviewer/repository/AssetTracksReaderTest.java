@@ -18,9 +18,9 @@ import static org.mockito.Mockito.when;
  * Created by pawelbryniarski on 06.07.2017.
  */
 public class AssetTracksReaderTest {
-
     Context contextMock = mock(Context.class);
     AssetManager assetManagerMock = mock(AssetManager.class);
+
     AssetTracksReader assetTracksReader = new AssetTracksReader(contextMock);
 
     @Before

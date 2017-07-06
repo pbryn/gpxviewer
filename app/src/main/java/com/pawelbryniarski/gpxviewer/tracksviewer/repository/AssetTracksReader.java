@@ -8,7 +8,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AssetTracksReader implements TracksReader {
+final public class AssetTracksReader implements TracksReader {
 
     private final Context context;
 
