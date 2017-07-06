@@ -21,7 +21,7 @@ public class AssetTracksReader implements TracksReader {
         try {
             fullNamesWithExtension = context.getAssets().list("tracks");
         } catch (IOException e) {
-            fullNamesWithExtension = new String[0];
+            throw new RuntimeException("Unable to read tracks from assets");
         }
         List<String> names = new ArrayList<>(fullNamesWithExtension.length);
         for (String aFullNamesWithExtension : fullNamesWithExtension) {
@@ -35,7 +35,7 @@ public class AssetTracksReader implements TracksReader {
         try {
             return context.getAssets().open(path);
         } catch (IOException e) {
-            return null;
+            throw new RuntimeException("Unable to read " + path + "from assets" + ". This should not happen");
         }
     }
 }
