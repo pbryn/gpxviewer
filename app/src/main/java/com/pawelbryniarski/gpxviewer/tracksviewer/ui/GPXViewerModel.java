@@ -14,7 +14,6 @@ public class GPXViewerModel implements MapsMVP.Model {
     private final GPXParser parser;
     private final TracksReader tracksReader;
 
-
     public GPXViewerModel(GPXParser parser, TracksReader tracksReader) {
         this.parser = parser;
         this.tracksReader = tracksReader;

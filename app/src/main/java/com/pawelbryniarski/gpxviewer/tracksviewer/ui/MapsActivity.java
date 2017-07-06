@@ -16,6 +16,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.pawelbryniarski.gpxviewer.R;
+import com.pawelbryniarski.gpxviewer.tracksviewer.ui.dependencyinjection.DaggerMapComponent;
+import com.pawelbryniarski.gpxviewer.tracksviewer.ui.dependencyinjection.MapModule;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,21 +25,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, MapsMVP.View {
 
-    public static final String ZOOM_PICKER_VISIBLE_KEY = "ZOOM_PICKER_VISIBLE";
-    public static final String LOADED_TRACKS_KEY = "LOADED_TRACKS";
+    private static final String ZOOM_PICKER_VISIBLE_KEY = "ZOOM_PICKER_VISIBLE";
+    private static final String LOADED_TRACKS_KEY = "LOADED_TRACKS";
     private static final String TRACKS_PICKER_VISIBLE_KEY = "TRACKS_PICKER_VISIBLE";
-    public static final int ZOOM_RATIO = 10;
-    public static final int MAP_LINES_WIDTH = 5;
-    private static final int[] colors = new int[]{Color.BLUE, Color.RED, Color.BLACK, Color.YELLOW,
-            Color.WHITE};
+    private static final int ZOOM_RATIO = 10;
+    private static final int MAP_LINES_WIDTH = 5;
+    private static final int[] colors = new int[]{Color.BLUE, Color.RED, Color.BLACK, Color.YELLOW, Color.WHITE};
+
+    @Inject MapsPresenter mapsPresenter;
     private GoogleMap mMap;
-    private MapsPresenter mapsPresenter = new MapsPresenter();
     private Bundle savedState;
 
     @OnClick(R.id.select_tracks)
@@ -61,32 +65,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         ButterKnife.bind(this);
+        injectDependencies();
 
         final SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         savedState = savedInstanceState;
+    }
 
-        zoomButton.setScaleX(0);
-        zoomButton.setScaleY(0);
-        selectTracksButton.setScaleX(0);
-        selectTracksButton.setScaleY(0);
-        selectTracksButton.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                selectTracksButton.animate().setInterpolator(new OvershootInterpolator()).scaleX(1).scaleY(1).withEndAction(new Runnable() {
-                    @Override
-                    public void run() {
-                        zoomButton.animate().setInterpolator(new OvershootInterpolator()).scaleX(1).scaleY(1).start();
-                    }
-                }).start();
-
-            }
-        }, 500);
+    private void injectDependencies() {
+        DaggerMapComponent.builder()
+                .mapModule(new MapModule(this))
+                .build()
+                .inject(this);
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        showButtonsWithAnimation();
         mMap = googleMap;
         MapViewState initialState;
         if (savedState != null) {
@@ -138,7 +134,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-
     public void showZoomPicker(final String[] trackNames) {
         new AlertDialog
                 .Builder(this)
@@ -173,5 +168,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 })
                 .create()
                 .show();
+    }
+
+    private void showButtonsWithAnimation() {
+        zoomButton.setScaleX(0);
+        zoomButton.setScaleY(0);
+        selectTracksButton.setScaleX(0);
+        selectTracksButton.setScaleY(0);
+        selectTracksButton.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                selectTracksButton
+                        .animate()
+                        .setInterpolator(new OvershootInterpolator())
+                        .scaleX(1)
+                        .scaleY(1)
+                        .start();
+                zoomButton
+                        .animate()
+                        .setInterpolator(new OvershootInterpolator())
+                        .scaleX(1)
+                        .scaleY(1)
+                        .setStartDelay(500)
+                        .start();
+            }
+        }, 500);
     }
 }

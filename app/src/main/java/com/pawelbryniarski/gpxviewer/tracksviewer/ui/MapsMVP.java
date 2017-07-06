@@ -15,7 +15,7 @@ public interface MapsMVP {
     }
 
     interface Presenter{
-        void attach(final MapsActivity activity, MapViewState initialState);
+        void attach(final MapsMVP.View view, MapViewState initialState);
         MapViewState detach();
         void onTracksPicked(boolean[] selectedTracks, String[] tracksNames);
         void onLoadTracksRequest();

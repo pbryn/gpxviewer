@@ -12,10 +12,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+
 public class GPXParser {
+
+    @Inject
+    public GPXParser() {}
 
     public List<LatLng> parse(InputStream inputStream) {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
