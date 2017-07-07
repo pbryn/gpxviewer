@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.animation.OvershootInterpolator;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -19,9 +20,7 @@ import com.pawelbryniarski.gpxviewer.R;
 import com.pawelbryniarski.gpxviewer.tracksviewer.ui.dependencyinjection.DaggerMapComponent;
 import com.pawelbryniarski.gpxviewer.tracksviewer.ui.dependencyinjection.MapModule;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +42,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Inject MapsPresenter mapsPresenter;
     private GoogleMap mMap;
     private Bundle savedState;
+    private AlertDialog dialog;
 
     @OnClick(R.id.select_tracks)
     public void showSelectTracksDialog() {
@@ -75,27 +75,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void injectDependencies() {
         DaggerMapComponent.builder()
-                .mapModule(new MapModule(this))
-                .build()
-                .inject(this);
+                          .mapModule(new MapModule(this))
+                          .build()
+                          .inject(this);
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         showButtonsWithAnimation();
         mMap = googleMap;
-        MapViewState initialState;
+        MapViewState initialState = MapViewState.initialState();
         if (savedState != null) {
-            initialState = new MapViewState(savedState.getBoolean(TRACKS_PICKER_VISIBLE_KEY),
-                    savedState.getBoolean(ZOOM_PICKER_VISIBLE_KEY),
-                    Arrays.asList(savedState.getStringArray(LOADED_TRACKS_KEY)),
-                    null);
-        } else {
-            initialState = new MapViewState(
-                    false,
-                    false,
-                    new ArrayList<String>(),
-                    new HashMap<String, List<LatLng>>());
+            initialState = initialState.changeState()
+                                       .withTracksPickerVisible(savedState.getBoolean(TRACKS_PICKER_VISIBLE_KEY))
+                                       .withZoomPickerVisibile(savedState.getBoolean(ZOOM_PICKER_VISIBLE_KEY))
+                                       .withLoadedTracks(Arrays.asList(savedState.getStringArray(LOADED_TRACKS_KEY)))
+                                       .apply();
         }
         savedState = null;
         mapsPresenter.attach(this, initialState);
@@ -103,13 +98,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        Log.d("TAG", "saving instance ");
         MapViewState stateToSave = mapsPresenter.detach();
         outState.putBoolean(TRACKS_PICKER_VISIBLE_KEY, stateToSave.trackPickerVisible);
         outState.putBoolean(ZOOM_PICKER_VISIBLE_KEY, stateToSave.zoomPickerVisible);
         outState.putStringArray(LOADED_TRACKS_KEY,
-                stateToSave.loadedTracks.toArray(new String[stateToSave.loadedTracks.size()]));
+                                stateToSave.loadedTracks.toArray(new String[stateToSave.loadedTracks.size()]));
         // do not save actual tracks as this may be too much data
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onDestroy() {
+        if(dialog != null && dialog.isShowing()){
+            dialog.dismiss();
+        }
+        super.onDestroy();
     }
 
     @Override
@@ -118,12 +122,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         int colorIndex = 0;
         for (Map.Entry<String, List<LatLng>> trackData : tracks.entrySet()) {
             mMap.addPolyline(new PolylineOptions()
-                    .addAll(trackData.getValue())
-                    .width(MAP_LINES_WIDTH)
-                    .color(colors[colorIndex % colors.length])
-                    .geodesic(true));
+                                     .addAll(trackData.getValue())
+                                     .width(MAP_LINES_WIDTH)
+                                     .color(colors[colorIndex % colors.length])
+                                     .geodesic(true));
             mMap.addMarker(new MarkerOptions().title(trackData.getKey())
-                    .position(trackData.getValue().get(0)));
+                                              .position(trackData.getValue().get(0)));
             colorIndex++;
         }
     }
@@ -135,7 +139,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void showZoomPicker(final String[] trackNames) {
-        new AlertDialog
+        dialog = new AlertDialog
                 .Builder(this)
                 .setTitle(R.string.pick_track_to_zoom)
                 .setSingleChoiceItems(trackNames, -1, new DialogInterface.OnClickListener() {
@@ -145,29 +149,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         dialog.dismiss();
                     }
                 })
-                .create()
-                .show();
+                .create();
+        dialog.show();
     }
 
     @Override
     public void showTracksPicker(final boolean[] selectedTracks, final String[] tracksNames) {
-        new AlertDialog.Builder(this)
+        dialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.pick_tracks_title)
                 .setMultiChoiceItems(tracksNames, selectedTracks,
-                        new DialogInterface.OnMultiChoiceClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                                selectedTracks[which] = isChecked;
-                            }
-                        })
+                                     new DialogInterface.OnMultiChoiceClickListener() {
+                                         @Override
+                                         public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                                             selectedTracks[which] = isChecked;
+                                         }
+                                     })
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         mapsPresenter.onTracksPicked(selectedTracks, tracksNames);
                     }
                 })
-                .create()
-                .show();
+                .create();
+        dialog.show();
     }
 
     private void showButtonsWithAnimation() {
