@@ -28,20 +28,20 @@ public class MapsPresenter implements MapsMVP.Presenter {
     }
 
     private void initialize(MapViewState initialState) {
-        if (!initialState.loadedTracks.isEmpty()) {
+        if (!initialState.loadedTracks().isEmpty()) {
             state = initialState.changeState()
-                                .withTracksData(model.getTracksData(initialState.loadedTracks))
+                                .withTracksData(model.getTracksData(initialState.loadedTracks()))
                                 .apply();
-            view.draw(state.tracksData);
+            view.draw(state.tracksData());
         } else {
             state = initialState;
         }
 
-        if (initialState.zoomPickerVisible) {
+        if (initialState.zoomPickerVisible()) {
             onZoomRequest();
         }
 
-        if (initialState.trackPickerVisible) {
+        if (initialState.trackPickerVisible()) {
             onLoadTracksRequest();
         }
     }
@@ -54,7 +54,7 @@ public class MapsPresenter implements MapsMVP.Presenter {
 
     @Override
     public void onZoomRequest() {
-        view.showZoomPicker(state.loadedTracks.toArray(new String[state.loadedTracks.size()]));
+        view.showZoomPicker(state.loadedTracks().toArray(new String[state.loadedTracks().size()]));
         state = state.changeState()
                      .withZoomPickerVisible(true)
                      .apply();
@@ -62,7 +62,7 @@ public class MapsPresenter implements MapsMVP.Presenter {
 
     @Override
     public void onZoomPicked(String trackName) {
-        view.zoom(state.tracksData.get(trackName).get(0));
+        view.zoom(state.tracksData().get(trackName).get(0));
         state = state.changeState()
                      .withZoomPickerVisible(false)
                      .apply();
@@ -73,7 +73,7 @@ public class MapsPresenter implements MapsMVP.Presenter {
         List<String> allTracks = model.getAvailableTracks();
         boolean[] selected = new boolean[allTracks.size()];
         for (int i = 0; i < allTracks.size(); i++) {
-            if (state.loadedTracks.contains(allTracks.get(i))) {
+            if (state.loadedTracks().contains(allTracks.get(i))) {
                 selected[i] = true;
             }
         }

@@ -100,10 +100,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onSaveInstanceState(Bundle outState) {
         Log.d("TAG", "saving instance ");
         MapViewState stateToSave = mapsPresenter.detach();
-        outState.putBoolean(TRACKS_PICKER_VISIBLE_KEY, stateToSave.trackPickerVisible);
-        outState.putBoolean(ZOOM_PICKER_VISIBLE_KEY, stateToSave.zoomPickerVisible);
+        outState.putBoolean(TRACKS_PICKER_VISIBLE_KEY, stateToSave.trackPickerVisible());
+        outState.putBoolean(ZOOM_PICKER_VISIBLE_KEY, stateToSave.zoomPickerVisible());
         outState.putStringArray(LOADED_TRACKS_KEY,
-                                stateToSave.loadedTracks.toArray(new String[stateToSave.loadedTracks.size()]));
+                                stateToSave.loadedTracks().toArray(new String[stateToSave.loadedTracks().size()]));
         // do not save actual tracks as this may be too much data
         super.onSaveInstanceState(outState);
     }

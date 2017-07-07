@@ -8,10 +8,10 @@ import java.util.Map;
 
  class MapViewState {
 
-     final boolean trackPickerVisible;
-     final List<String> loadedTracks;
-     final Map<String, List<LatLng>> tracksData;
-     final boolean zoomPickerVisible;
+     private final boolean trackPickerVisible;
+     private final List<String> loadedTracks;
+     private final Map<String, List<LatLng>> tracksData;
+     private final boolean zoomPickerVisible;
 
 
     private MapViewState(boolean trackPickerVisible,
@@ -27,6 +27,22 @@ import java.util.Map;
      static MapViewState initialState() {
         return new MapViewState(false, false, Collections.<String>emptyList(), Collections.<String, List<LatLng>>emptyMap());
     }
+
+     public boolean trackPickerVisible() {
+         return trackPickerVisible;
+     }
+
+     public List<String> loadedTracks() {
+         return loadedTracks;
+     }
+
+     public Map<String, List<LatLng>> tracksData() {
+         return tracksData;
+     }
+
+     public boolean zoomPickerVisible() {
+         return zoomPickerVisible;
+     }
 
      StateChanger changeState() {
         return new StateChanger(this);
