@@ -6,12 +6,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class MapViewState {
+ class MapViewState {
 
-    public final boolean trackPickerVisible;
-    public final List<String> loadedTracks;
-    public final Map<String, List<LatLng>> tracksData;
-    public final boolean zoomPickerVisible;
+     final boolean trackPickerVisible;
+     final List<String> loadedTracks;
+     final Map<String, List<LatLng>> tracksData;
+     final boolean zoomPickerVisible;
 
 
     private MapViewState(boolean trackPickerVisible,
@@ -24,15 +24,15 @@ public class MapViewState {
         this.zoomPickerVisible = zoomPickerVisible;
     }
 
-    public static MapViewState initialState() {
+     static MapViewState initialState() {
         return new MapViewState(false, false, Collections.<String>emptyList(), Collections.<String, List<LatLng>>emptyMap());
     }
 
-    public StateChanger changeState() {
+     StateChanger changeState() {
         return new StateChanger(this);
     }
 
-    public class StateChanger {
+     class StateChanger {
 
         private final MapViewState initialState;
 
@@ -45,27 +45,27 @@ public class MapViewState {
             this.initialState = initialState;
         }
 
-        public StateChanger withZoomPickerVisibile(boolean visible) {
+         StateChanger withZoomPickerVisible(boolean visible) {
             this.zoomPickerVisible = visible;
             return this;
         }
 
-        public StateChanger withTracksPickerVisible(boolean visible) {
+         StateChanger withTracksPickerVisible(boolean visible) {
             this.tracksPickerVisible = visible;
             return this;
         }
 
-        public StateChanger withLoadedTracks(List<String> loadedTracks) {
+         StateChanger withLoadedTracks(List<String> loadedTracks) {
             this.loadedTracks = loadedTracks;
             return this;
         }
 
-        public StateChanger withTracksData(Map<String, List<LatLng>> tracksData) {
+         StateChanger withTracksData(Map<String, List<LatLng>> tracksData) {
             this.tracksData = tracksData;
             return this;
         }
 
-        public MapViewState apply() {
+         MapViewState apply() {
             boolean newTracksPickerVisible =
                     tracksPickerVisible != null ? tracksPickerVisible : initialState.trackPickerVisible;
             boolean newZoomPickerVisible =

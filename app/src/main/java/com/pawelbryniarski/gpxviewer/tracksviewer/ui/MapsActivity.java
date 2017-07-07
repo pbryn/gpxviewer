@@ -88,7 +88,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (savedState != null) {
             initialState = initialState.changeState()
                                        .withTracksPickerVisible(savedState.getBoolean(TRACKS_PICKER_VISIBLE_KEY))
-                                       .withZoomPickerVisibile(savedState.getBoolean(ZOOM_PICKER_VISIBLE_KEY))
+                                       .withZoomPickerVisible(savedState.getBoolean(ZOOM_PICKER_VISIBLE_KEY))
                                        .withLoadedTracks(Arrays.asList(savedState.getStringArray(LOADED_TRACKS_KEY)))
                                        .apply();
         }

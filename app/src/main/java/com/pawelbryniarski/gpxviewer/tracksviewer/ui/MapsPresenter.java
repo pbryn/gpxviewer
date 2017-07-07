@@ -56,7 +56,7 @@ public class MapsPresenter implements MapsMVP.Presenter {
     public void onZoomRequest() {
         view.showZoomPicker(state.loadedTracks.toArray(new String[state.loadedTracks.size()]));
         state = state.changeState()
-                     .withZoomPickerVisibile(true)
+                     .withZoomPickerVisible(true)
                      .apply();
     }
 
@@ -64,7 +64,7 @@ public class MapsPresenter implements MapsMVP.Presenter {
     public void onZoomPicked(String trackName) {
         view.zoom(state.tracksData.get(trackName).get(0));
         state = state.changeState()
-                     .withZoomPickerVisibile(false)
+                     .withZoomPickerVisible(false)
                      .apply();
     }
 
@@ -100,17 +100,17 @@ public class MapsPresenter implements MapsMVP.Presenter {
                                                       .withTracksPickerVisible(false)
                                                       .withLoadedTracks(newlySelectedTracks);
         if (tracks.isEmpty()) {
-            state = stateChanger.withZoomPickerVisibile(false).apply();
+            state = stateChanger.withZoomPickerVisible(false).apply();
 
         } else if (tracks.size() == 1) {
-            state = stateChanger.withZoomPickerVisibile(false)
+            state = stateChanger.withZoomPickerVisible(false)
                                 .withTracksData(tracks)
                                 .apply();
             view.zoom(tracks.get(newlySelectedTracks.get(0)).get(0));
 
 
         } else {
-            state = stateChanger.withZoomPickerVisibile(true)
+            state = stateChanger.withZoomPickerVisible(true)
                                 .withTracksData(tracks)
                                 .apply();
             view.showZoomPicker(newlySelectedTracks.toArray(new String[newlySelectedTracks.size()]));
