@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.schedulers.Schedulers;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.mock;
@@ -26,7 +28,7 @@ public class MapsPresenterTest {
 
     MapsMVP.Model modelMock = mock(MapsMVP.Model.class);
     MapsMVP.View viewMock = mock(MapsMVP.View.class);
-    MapsPresenter tested = new MapsPresenter(modelMock);
+    MapsPresenter tested = new MapsPresenter(Schedulers.trampoline(), Schedulers.trampoline(), modelMock);
     MapViewState stateMock = mock(MapViewState.class);
     MapViewState stateMockChanged = mock(MapViewState.class);
     MapViewState.StateChanger stateChangeMock = mock(MapViewState.StateChanger.class);

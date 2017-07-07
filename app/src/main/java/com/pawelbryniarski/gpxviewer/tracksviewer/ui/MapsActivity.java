@@ -39,7 +39,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int MAP_LINES_WIDTH = 5;
     private static final int[] colors = new int[]{Color.BLUE, Color.RED, Color.BLACK, Color.YELLOW, Color.WHITE};
 
-    @Inject MapsPresenter mapsPresenter;
+    @Inject
+    MapsMVP.Presenter mapsPresenter;
     private GoogleMap mMap;
     private Bundle savedState;
     private AlertDialog dialog;
